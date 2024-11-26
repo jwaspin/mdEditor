@@ -44,10 +44,10 @@ jobs:
           git push origin $version_tag
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1.1.0
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ steps.create_tag.outputs.version }}
-          release_name: Release ${{ steps.create_tag.outputs.version }}
+          tag: ${{ steps.create_tag.outputs.version }}
+          name: Release ${{ steps.create_tag.outputs.version }}
           body: Automated release for version ${{ steps.create_tag.outputs.version }}.
           draft: false
           prerelease: false
