@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,6 +21,24 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: build-output
+          path: dist
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -37,9 +55,7 @@ jobs:
           version=$(node -p "require('./package.json').version")
           version_tag="v$version"
           echo "Version from package.json: $version_tag"
-          # Pass the version as an output
           echo "version=$version_tag" >> $GITHUB_OUTPUT
-          # Create and push the tag
           git tag $version_tag
           git push origin $version_tag
 
