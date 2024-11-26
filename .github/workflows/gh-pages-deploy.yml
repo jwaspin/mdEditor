@@ -50,7 +50,7 @@ jobs:
           git push origin $next_version
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v1.1.0
         with:
           tag_name: $next_version
           release_name: Release $next_version
