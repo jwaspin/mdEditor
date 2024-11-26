@@ -29,7 +29,7 @@ jobs:
           publish_dir: ./dist
 
       - name: Create Tag
-        id: set_next_version
+        id: create_tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -46,7 +46,8 @@ jobs:
           patch=$((patch + 1))
           next_version="v$major.$minor.$patch"
           echo "Next version: $next_version"
-          echo "::set-output name=next_version::$next_version"
+          # Pass the version as an output
+          echo "next_version=$next_version" >> $GITHUB_OUTPUT
           # Create and push the tag
           git tag $next_version
           git push origin $next_version
@@ -54,9 +55,9 @@ jobs:
       - name: Create GitHub Release
         uses: actions/create-release@v1.1.0
         with:
-          tag_name: ${{ steps.set_next_version.outputs.next_version }}
-          release_name: Release ${{ steps.set_next_version.outputs.next_version }}
-          body: Automated release for version ${{ steps.set_next_version.outputs.next_version }}.
+          tag_name: ${{ steps.create_tag.outputs.next_version }}
+          release_name: Release ${{ steps.create_tag.outputs.next_version }}
+          body: Automated release for version ${{ steps.create_tag.outputs.next_version }}.
           draft: false
           prerelease: false
         env:
