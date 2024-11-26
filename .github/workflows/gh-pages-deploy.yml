@@ -33,37 +33,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Fetch existing tags
-          git fetch --tags
-          # Determine the latest tag
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1` || echo "v0.0.0")
-          echo "Latest tag: $latest_tag"
-          # Calculate the next version
-          IFS='.' read -ra VERSION <<< "${latest_tag/v/}"
-          major=${VERSION[0]}
-          minor=${VERSION[1]}
-          patch=${VERSION[2]}
-          patch=$((patch + 1))
-          next_version="v$major.$minor.$patch"
-          echo "Next version: $next_version"
+          # Read version from package.json
+          version=$(node -p "require('./package.json').version")
+          version_tag="v$version"
+          echo "Version from package.json: $version_tag"
           # Pass the version as an output
-          echo "next_version=$next_version" >> $GITHUB_OUTPUT
+          echo "version=$version_tag" >> $GITHUB_OUTPUT
           # Create and push the tag
-          git tag $next_version
-          git push origin $next_version
-
-      - name: Debug Output
-        run: |
-          echo "Next version is ${{ steps.create_tag.outputs.next_version }}"
-          ls -al $GITHUB_OUTPUT
-          cat $GITHUB_OUTPUT
+          git tag $version_tag
+          git push origin $version_tag
 
       - name: Create GitHub Release
         uses: actions/create-release@v1.1.0
         with:
-          tag_name: ${{ steps.create_tag.outputs.next_version }}
-          release_name: Release ${{ steps.create_tag.outputs.next_version }}
-          body: Automated release for version ${{ steps.create_tag.outputs.next_version }}.
+          tag_name: ${{ steps.create_tag.outputs.version }}
+          release_name: Release ${{ steps.create_tag.outputs.version }}
+          body: Automated release for version ${{ steps.create_tag.outputs.version }}.
           draft: false
           prerelease: false
         env:
