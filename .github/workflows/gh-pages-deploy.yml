@@ -53,7 +53,10 @@ jobs:
           git push origin $next_version
 
       - name: Debug Output
-        run: echo "Next version is ${{ steps.create_tag.outputs.next_version }}"
+        run: |
+          echo "Next version is ${{ steps.create_tag.outputs.next_version }}"
+          ls -al $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
 
       - name: Create GitHub Release
         uses: actions/create-release@v1.1.0
