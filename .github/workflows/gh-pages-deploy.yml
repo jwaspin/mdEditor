@@ -54,7 +54,8 @@ jobs:
         with:
           tag_name: $next_version
           release_name: Release $next_version
-          body: |
-            Automated release for version $next_version.
+          body: Automated release for version $next_version.
           draft: false
           prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
